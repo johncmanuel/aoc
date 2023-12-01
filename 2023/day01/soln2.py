@@ -36,7 +36,6 @@ for i in range(len(lines)):
             back_str = str(ch_r)
             break
         back_str += ch_r
-    print(front_str, back_str)
     n = front_str + back_str
     total += int(n)
 
