@@ -40,6 +40,6 @@ def create_input_file(data: str, year: str, day: str, filename: str = "input"):
 def copy_template(dst: str) -> None:
     shutil.copy("./lib/template.py", dst)
 
-def extract_input(filename: str) -> list:
+def extract_input(filename: str) -> list[str]:
     with open(filename) as f:
         return [line.rstrip() for line in f]
