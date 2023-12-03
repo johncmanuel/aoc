@@ -1,6 +1,7 @@
 from lib.aoc import *
 import argparse
-import subprocess
+import importlib.util
+
 
 def make_cmd(url: str, year: str, day: str):
     url = get_current_aoc_url(url, year, day)
@@ -12,10 +13,11 @@ def make_cmd(url: str, year: str, day: str):
 
     copy_template(get_folder(year, valid_day))
 
-def run_cmd(year: str, day: str, file: str):
+def run_cmd(year: str, day: str, filename: str):
     day = validate_day(day)
-    cwd = f"{os.path.dirname(os.path.realpath(__file__))}/"
-    subprocess.run(["python", f"{get_folder(year, day)}/{file}.py"], cwd=cwd)
+    spec = importlib.util.spec_from_file_location(day, f"{get_folder(year, day)}/{filename}.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
 
 def main():
     parser = argparse.ArgumentParser(description="AoC CLI tools")

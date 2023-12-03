@@ -31,8 +31,7 @@ def get_folder(year: str, day: str) -> str:
     return f"{year}/day{day}"
 
 def get_input(url: str):
-    input_f = requests.get(f"{url}/input", cookies={"session": os.getenv("session")}).text
-    return input_f
+    return requests.get(f"{url}/input", cookies={"session": os.getenv("session")}).text
 
 def create_input_file(data: str, year: str, day: str, filename: str = "input"):
     with open(f"{get_folder(year, day)}/{filename}.txt", "w") as f:
