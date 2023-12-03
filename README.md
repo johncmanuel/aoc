@@ -5,6 +5,9 @@ Let's get it
 ## Commmands
 
 ```bash
+# install packages
+pip install -r requirements.txt
+
 # setup environment for today's challenge
 python main.py make --day <current day>
 
