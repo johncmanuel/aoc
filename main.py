@@ -45,9 +45,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# year, day = 2023, "3"
-# x = get_current_url(AOC_URL, "9")
-# y = save_input(x, year, day)
-# print(x)
-
