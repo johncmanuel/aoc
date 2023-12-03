@@ -30,7 +30,7 @@ def create_directory(year: str, day: str) -> None:
 def get_folder(year: str, day: str) -> str:
     return f"{year}/day{day}"
 
-def get_input(url: str):
+def get_input(url: str) -> str:
     return requests.get(f"{url}/input", cookies={"session": os.getenv("session")}).text
 
 def create_input_file(data: str, year: str, day: str, filename: str = "input"):

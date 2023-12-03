@@ -14,6 +14,7 @@ def make_cmd(url: str, year: str, day: str):
     copy_template(get_folder(year, valid_day))
 
 def run_cmd(year: str, day: str, filename: str):
+    """ Source for solution: https://stackoverflow.com/a/54956419 """
     day = validate_day(day)
     spec = importlib.util.spec_from_file_location(day, f"{get_folder(year, day)}/{filename}.py")
     module = importlib.util.module_from_spec(spec)
