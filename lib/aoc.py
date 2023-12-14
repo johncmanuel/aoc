@@ -14,8 +14,8 @@ AOC_URL = "https://adventofcode.com"
 CURRENT_DATE = datetime.now()
 
 def validate_day(day: str) -> str:
-    if day < "0" or day > "32":
-        raise Exception("Invalid day")
+    # if day < "0" or day > "32":
+    #     raise Exception("Invalid day")
     if day > "0" and day <= "9":
         day = f"0{day}"
     return day
