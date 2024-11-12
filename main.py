@@ -6,7 +6,6 @@ from lib.aoc import (
     get_folder_name,
     validate_day,
     CURRENT_DATE,
-    AOC_URL,
 )
 import argparse
 from importlib.util import spec_from_file_location, module_from_spec
