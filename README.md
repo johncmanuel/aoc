@@ -2,6 +2,11 @@
 
 Let's get it
 
+## Setup
+
+1. Get session cookie from browser. See [this GitHub issue](https://github.com/wimglenn/advent-of-code-wim/issues/1) for instructions. Then insert it into a .env file
+2. Install packages and run `main.py -h` for commands on setting up the environment and running the solutions.
+
 ## Commmands
 
 ```bash

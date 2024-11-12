@@ -1,17 +1,24 @@
 from lib.aoc import extract_input
 import os
 
+
 class Solution:
 
     def __init__(self) -> None:
-        # get path of input file
+        # sef.lines contains the input data from AOC
         dir_path = os.path.dirname(os.path.realpath(__file__)).split("\\")
-        self.lines = extract_input(f"./{dir_path[-2]}/{dir_path[-1]}/input.txt")
+        input_path = f"{dir_path[-1]}/input.txt"
+        if len(dir_path) > 1:
+            input_path = f"{dir_path[-2]}/{dir_path[-1]}/input.txt"
+        self.lines = extract_input(input_path)
 
-    def solve(self) -> None:
-        # do something with input
-        # ...
-        print(self.lines)
+    def solve_part_1(self) -> None:
+        pass
+
+    def solve_part_2(self) -> None:
+        pass
+
 
 s = Solution()
-s.solve()
+s.solve_part_1()
+s.solve_part_2()
