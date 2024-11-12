@@ -5,17 +5,16 @@ Let's get it
 ## Setup
 
 1. Get session cookie from browser. See [this GitHub issue](https://github.com/wimglenn/advent-of-code-wim/issues/1) for instructions. Then insert it into a .env file
-2. Install packages and run `main.py -h` for commands on setting up the environment and running the solutions.
+2. Install packages and run `main.py -h` for commands or see below on setting up the environment and running the solutions.
 
-## Commmands
+## Commands
 
 ```bash
-# install packages
-pip install -r requirements.txt
+# setup environment 
+python main.py make -y <2020, 2021, etc.> -d <1, 2, 3, etc.>
 
-# setup environment for today's challenge
-python main.py make --day <current day>
+# run solutions 
+python main.py run -y <2020, 2021, etc.> -d <1, 2, 3, etc.>
 
-# run solutions for today's challenge
-python main.py run --day <current day> --file <name of solution file without file extension>
+# for setting up and running today's challenge, don't include flags.
 ```
