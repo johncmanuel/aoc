@@ -87,8 +87,16 @@ def main():
     )
     args = parser.parse_args()
 
-    day = str(CURRENT_DATE.day) if not args.day else str(args.day)
-    year = str(CURRENT_DATE.year) if not args.year else str(args.year)
+    day = (
+        str(args.d)
+        if hasattr(args, "d") and args.d is not None
+        else str(CURRENT_DATE.day)
+    )
+    year = (
+        str(args.y)
+        if hasattr(args, "y") and args.y is not None
+        else str(CURRENT_DATE.year)
+    )
 
     if args.command == "make":
         make_cmd(year, day)
