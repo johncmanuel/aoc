@@ -1,5 +1,6 @@
 """ Python library for interacting with AoC """
 
+import pytz
 from datetime import datetime
 import requests
 import os
@@ -18,7 +19,8 @@ def get_env_var(env_var) -> str:
 
 
 AOC_URL = "https://adventofcode.com"
-CURRENT_DATE = datetime.now()
+EASTERN_TZ_US = pytz.timezone("America/New_York")
+CURRENT_DATE = datetime.now(EASTERN_TZ_US)
 
 
 def validate_day(day: str) -> str:

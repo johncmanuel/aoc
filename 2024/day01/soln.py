@@ -1,5 +1,6 @@
 from lib.aoc import extract_input
 import os
+from collections import Counter
 
 
 class Solution:
@@ -28,7 +29,18 @@ class Solution:
         print(distance)
 
     def solve_part_2(self) -> None:
-        pass
+        left = []
+        right = []
+        for s in self.lines:
+            y = s.split("  ")
+            left.append(int(y[0]))
+            right.append(int(y[1]))
+        right = Counter(right)
+        similarity = 0
+        for num in left:
+            if num in right:
+                similarity += right[num] * num
+        print(similarity)
 
 
 s = Solution()
