@@ -19,6 +19,7 @@ def get_env_var(env_var) -> str:
 
 
 AOC_URL = "https://adventofcode.com"
+# AOC uses Eastern time zone
 EASTERN_TZ_US = pytz.timezone("America/New_York")
 CURRENT_DATE = datetime.now(EASTERN_TZ_US)
 
