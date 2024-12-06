@@ -35,17 +35,20 @@ def validate_day(day: str) -> str:
     return day
 
 
+# Example URL: https://adventofcode.com/2020/day/1
 def get_current_aoc_url(year: str, day: str) -> str:
     return f"{AOC_URL}/{year}/day/{day}"
 
 
+# Example directory structure: solns/2020/day01
 def create_directory(year: str, day: str) -> None:
-    sub_dir = Path(f"{year}/day{day}")
+    f = get_folder_name(year, day)
+    sub_dir = Path(f)
     sub_dir.mkdir(parents=True, exist_ok=True)
 
 
 def get_folder_name(year: str, day: str) -> str:
-    return f"{year}/day{day}"
+    return f"solns/{year}/day{day}"
 
 
 def get_input(url: str) -> str:
@@ -54,7 +57,8 @@ def get_input(url: str) -> str:
 
 
 def create_input_file(data: str, year: str, day: str) -> None:
-    data_file = f"{get_folder_name(year, day)}/input.txt"
+    f = get_folder_name(year, day)
+    data_file = f"{f}/input.txt"
     with open(data_file, "w") as f:
         f.write(data)
 
