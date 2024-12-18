@@ -7,7 +7,7 @@ class Solution:
     def __init__(self) -> None:
         # sef.lines contains the input data from AOC
         dir_path = os.path.dirname(os.path.realpath(__file__)).split("\\")
-        input_path = f"{dir_path[-1]}/input.txt"
+        input_path = f"{dir_path[-1]}/ex.txt"
         if len(dir_path) > 1:
             input_path = f"{dir_path[-2]}/{dir_path[-1]}/input.txt"
         self.lines = extract_input(input_path)
@@ -57,35 +57,44 @@ class Solution:
         for p in pages:
             page = [int(x) for x in p.split(",")]
             isCorrect = True
-            incorrect_num = None
+            idx_lst = []
             for i, curr in enumerate(page):
                 before, after = page[0:i], page[i + 1 :]
                 if any(b in rules_d[curr] for b in before if curr in rules_d) or any(
                     x not in rules_d[curr] for x in after if curr in rules_d
                 ):
                     isCorrect = False
-                    incorrect_num = (curr, i)
-                    # incorrects.append((curr, page))
-                    break
+                    idx_lst.append(i)
             if isCorrect:
                 continue
-            # generate all possible positions of incorrect_num
+            print("idx_lst", idx_lst, "page", page)
+            for k in idx_lst:
+                foundIt = False
+                for j in range(len(page)):
+                    if j == k:
+                        continue
+                    d = page.copy()
+                    d[j], d[k] = d[k], d[j]
+                    # print("after swap", d, "og", page)
+                    if not self.is_valid_page(d, rules_d):
+                        continue
+                    print("correct swap", d)
+                    middle_page_nums += d[len(d) // 2]
+                    foundIt = True
+                    break
+                if foundIt:
+                    break
 
-            # print("incorrect page", page, "incorrect_num", incorrect_num)
-            #     for i, curr in enumerate(oh):
-            #         before, after = oh[0:i], oh[i + 1 :]
-            #         if any(
-            #             b in rules_d[curr] for b in before if curr in rules_d
-            #         ) or any(x not in rules_d[curr] for x in after if curr in rules_d):
-            #             continue
-            #         new_page = before + after
-            #         m = len(new_page) // 2
-            #         middle_page_nums += new_page[m]
-            #         found = True
-            #         break
-            #     if found:
-            #         break
         print(middle_page_nums)
+
+    def is_valid_page(self, page: list[int], rules_d: dict[int, set]):
+        for i, curr in enumerate(page):
+            before, after = page[0:i], page[i + 1 :]
+            if any(b in rules_d[curr] for b in before if curr in rules_d) or any(
+                x not in rules_d[curr] for x in after if curr in rules_d
+            ):
+                return False
+        return True
 
 
 s = Solution()
