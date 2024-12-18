@@ -43,7 +43,49 @@ class Solution:
         print(middle_page_nums)
 
     def solve_part_2(self) -> None:
-        pass
+        pivot = self.lines.index("")
+        rules, pages = self.lines[:pivot], self.lines[pivot + 1 :]
+        rules_d = {}  # key: rule, value: set()
+        middle_page_nums = 0
+        for r in rules:
+            k = r.split("|")
+            x, y = int(k[0]), int(k[1])
+            if x in rules_d:
+                rules_d[x].add(y)
+            else:
+                rules_d[x] = set([y])
+        for p in pages:
+            page = [int(x) for x in p.split(",")]
+            isCorrect = True
+            incorrect_num = None
+            for i, curr in enumerate(page):
+                before, after = page[0:i], page[i + 1 :]
+                if any(b in rules_d[curr] for b in before if curr in rules_d) or any(
+                    x not in rules_d[curr] for x in after if curr in rules_d
+                ):
+                    isCorrect = False
+                    incorrect_num = (curr, i)
+                    # incorrects.append((curr, page))
+                    break
+            if isCorrect:
+                continue
+            # generate all possible positions of incorrect_num
+
+            # print("incorrect page", page, "incorrect_num", incorrect_num)
+            #     for i, curr in enumerate(oh):
+            #         before, after = oh[0:i], oh[i + 1 :]
+            #         if any(
+            #             b in rules_d[curr] for b in before if curr in rules_d
+            #         ) or any(x not in rules_d[curr] for x in after if curr in rules_d):
+            #             continue
+            #         new_page = before + after
+            #         m = len(new_page) // 2
+            #         middle_page_nums += new_page[m]
+            #         found = True
+            #         break
+            #     if found:
+            #         break
+        print(middle_page_nums)
 
 
 s = Solution()
