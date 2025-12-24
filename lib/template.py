@@ -12,7 +12,6 @@ class Solution:
         self.lines = extract_input(self.year, self.day)
 
     def solve_part_1(self) -> None:
-        print(self.lines)
         pass
 
     def solve_part_2(self) -> None:
