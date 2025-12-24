@@ -64,9 +64,14 @@ def fetch_and_save_input(year: Union[int, str], day: Union[int, str]) -> Path:
     return file_path
 
 
-def extract_input(year: Union[int, str], day: Union[int, str]) -> List[str]:
-    """Reads input.txt for a specific day and returns a list of lines."""
-    file_path = get_day_path(year, day) / "input.txt"
+def extract_input(
+    year: Union[int, str], day: Union[int, str], isExample: bool = False
+) -> List[str]:
+    """Reads input.txt for a specific day and returns a list of lines. isExample determines whether to use an example input from the prompt."""
+    if isExample:
+        file_path = get_day_path(year, day) / "example.txt"
+    else:
+        file_path = get_day_path(year, day) / "input.txt"
 
     if not file_path.exists():
         fetch_and_save_input(year, day)
