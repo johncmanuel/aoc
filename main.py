@@ -1,109 +1,89 @@
-from lib.aoc import (
-    get_current_aoc_url,
-    get_input,
-    create_directory,
-    create_input_file,
-    get_folder_name,
-    validate_day,
-    CURRENT_DATE,
-)
 import argparse
 from importlib.util import spec_from_file_location, module_from_spec
-import os
-import shutil
+from pathlib import Path
+from lib.aoc import fetch_and_save_input, get_day_path, get_current_aoc_time
+
+TEMPLATE_PATH = Path("lib/template.py")
 
 
-def make_cmd(year: str, day: str):
-    url = get_current_aoc_url(year, day)
-    valid_day = validate_day(day)
-    folder = get_folder_name(year, valid_day)
+def make_cmd(year: int, day: int) -> None:
+    """Sets up the folder, downloads input, and copies the solution template."""
+    try:
+        fetch_and_save_input(year, day)
+    except Exception as e:
+        print(f"Warning: Could not fetch input ({e}). Creating folder anyway.")
+        get_day_path(year, day).mkdir(parents=True, exist_ok=True)
 
-    if os.path.exists(folder):
-        raise Exception("Folder already exists:", folder)
+    folder = get_day_path(year, day)
+    soln_file = folder / "soln.py"
 
-    data = get_input(url)
-    create_directory(year, valid_day)
-    create_input_file(data, year, valid_day)
+    if soln_file.exists():
+        print(f"Solution file already exists at {soln_file}. Skipping template copy.")
+        return
 
-    shutil.copy("./lib/template.py", folder)
-    os.rename(f"{folder}/template.py", f"{folder}/soln.py")
+    if TEMPLATE_PATH.exists():
+        soln_file.write_text(TEMPLATE_PATH.read_text())
+        print(f"Created {soln_file} from template.")
+    else:
+        soln_file.touch()
+        print(f"Created empty file at {soln_file} (Template not found).")
 
 
-def run_cmd(year: str, day: str):
-    """Source for solution: https://stackoverflow.com/a/54956419"""
-    day = validate_day(day)
-    folder = get_folder_name(year, day)
-    soln = f"{folder}/soln.py"
+def run_cmd(year: int, day: int) -> None:
+    """Dynamically imports and executes the solution file."""
+    folder = get_day_path(year, day)
+    soln_file = folder / "soln.py"
 
-    if not soln:
-        raise Exception("No solution file found for day:", day, "year:", year)
+    if not soln_file.exists():
+        raise FileNotFoundError(f"No solution file found at: {soln_file}")
 
-    spec = spec_from_file_location(day, soln)
-    if not spec:
-        raise Exception("Invalid file", soln)
+    print(f"Running solution for {year} Day {day}...")
 
-    module = module_from_spec(spec)
+    spec = spec_from_file_location(str(day), soln_file)
 
     # Solves type error with spec.loader
-    if not spec.loader:
-        raise ImportError("Spec Loader not found", soln)
+    if not spec or not spec.loader:
+        raise ImportError(f"Could not load spec for {soln_file}")
 
+    module = module_from_spec(spec)
     spec.loader.exec_module(module)
 
 
 def main():
+    now = get_current_aoc_time()
+
     parser = argparse.ArgumentParser(description="AoC CLI tools")
-    subparsers = parser.add_subparsers(title="commands", dest="command")
+    subparsers = parser.add_subparsers(dest="command", required=True)
 
-    # Leave arguments blank if using current year and day
+    def add_date_args(p):
+        p.add_argument(
+            "-y",
+            "--year",
+            type=int,
+            default=now.year,
+            help=f"Year (default: {now.year})",
+        )
+        p.add_argument(
+            "-d", "--day", type=int, default=now.day, help=f"Day (default: {now.day})"
+        )
+
     make_parser = subparsers.add_parser(
-        "make", help="Sets up environment for current day"
+        "make", help="Setup environment for specific day"
     )
-    make_parser.add_argument(
-        "-y",
-        type=int,
-        required=False,
-        help="Specify the year (ex. 2020, 2021, etc)",
-    )
-    make_parser.add_argument(
-        "-d",
-        type=int,
-        required=False,
-        help="Specify the day (ex. 1, 2, 3, etc)",
-    )
+    add_date_args(make_parser)
 
-    run_parser = subparsers.add_parser("run", help="Run solution")
-    run_parser.add_argument(
-        "--y",
-        type=int,
-        required=False,
-        help="Specify the year (ex. 2020, 2021, etc)",
-    )
-    run_parser.add_argument(
-        "--d",
-        type=int,
-        required=False,
-        help="Specify the day (ex. 1, 2, 3, etc)",
-    )
+    run_parser = subparsers.add_parser("run", help="Run solution for specific day")
+    add_date_args(run_parser)
+
     args = parser.parse_args()
 
-    day = (
-        str(args.d)
-        if hasattr(args, "d") and args.d is not None
-        else str(CURRENT_DATE.day)
-    )
-    year = (
-        str(args.y)
-        if hasattr(args, "y") and args.y is not None
-        else str(CURRENT_DATE.year)
-    )
-
-    if args.command == "make":
-        make_cmd(year, day)
-    elif args.command == "run":
-        run_cmd(year, day)
-    else:
-        raise Exception("Invalid command.")
+    try:
+        if args.command == "make":
+            make_cmd(args.year, args.day)
+        elif args.command == "run":
+            run_cmd(args.year, args.day)
+    except Exception as e:
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":

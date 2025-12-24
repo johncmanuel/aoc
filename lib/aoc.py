@@ -1,68 +1,74 @@
-""" Python library for interacting with AoC """
+import os
+from datetime import datetime
+from pathlib import Path
+from typing import List, Union
 
 import pytz
-from datetime import datetime
 import requests
-import os
 from dotenv import load_dotenv
-from pathlib import Path
-
 
 load_dotenv()
 
-
-def get_env_var(env_var) -> str:
-    var = os.getenv(env_var)
-    if not var:
-        raise Exception(f"Environment variable {env_var} not set")
-    return var
+BASE_URL = "https://adventofcode.com"
+BASE_SOLN_DIR = Path("solns")
+EASTERN_TZ = pytz.timezone("America/New_York")
 
 
-AOC_URL = "https://adventofcode.com"
-# AOC uses Eastern time zone
-EASTERN_TZ_US = pytz.timezone("America/New_York")
-CURRENT_DATE = datetime.now(EASTERN_TZ_US)
+def _get_session() -> str:
+    """Retrieves the AoC session token."""
+    if not (session := os.getenv("session")):
+        raise EnvironmentError("Environment variable 'session' is missing.")
+    return session
 
 
-def validate_day(day: str) -> str:
-    # if day < "0" or day > "32":
-    #     raise Exception("Invalid day")
+def _format_date(year: Union[int, str], day: Union[int, str]) -> tuple[str, str]:
+    """Validates and formats year and day (e.g., 1 -> '01')."""
     day_int = int(day)
-    if 0 < day_int < 10:
-        day = f"0{day}"
-    if day_int > 32 or day_int < 1:
-        raise Exception("Invalid day")
-    return day
+    if not (1 <= day_int <= 25):
+        raise ValueError(f"Day must be between 1 and 25. Got: {day}")
+    return str(year), f"{day_int:02d}"
 
 
-# Example URL: https://adventofcode.com/2020/day/1
-def get_current_aoc_url(year: str, day: str) -> str:
-    return f"{AOC_URL}/{year}/day/{day}"
+def get_current_aoc_time() -> datetime:
+    """Returns the current time in AoC's timezone (EST/EDT)."""
+    return datetime.now(EASTERN_TZ)
 
 
-# Example directory structure: solns/2020/day01
-def create_directory(year: str, day: str) -> None:
-    f = get_folder_name(year, day)
-    sub_dir = Path(f)
-    sub_dir.mkdir(parents=True, exist_ok=True)
+def get_day_path(year: Union[int, str], day: Union[int, str]) -> Path:
+    """Returns the local directory path: solns/YYYY/dayDD."""
+    y_str, d_str = _format_date(year, day)
+    return BASE_SOLN_DIR / y_str / f"day{d_str}"
 
 
-def get_folder_name(year: str, day: str) -> str:
-    return f"solns/{year}/day{day}"
+def fetch_and_save_input(year: Union[int, str], day: Union[int, str]) -> Path:
+    """
+    Creates the directory structure, fetches input from AoC,
+    saves it to input.txt, and returns the file path.
+
+    """
+    # y_str, d_str = _format_date(year, day)
+    folder = get_day_path(year, day)
+    folder.mkdir(parents=True, exist_ok=True)
+
+    file_path = folder / "input.txt"
+
+    # Only fetch if we don't already have it
+    if not file_path.exists():
+        url = f"{BASE_URL}/{year}/day/{int(day)}/input"
+        resp = requests.get(url, cookies={"session": _get_session()})
+        resp.raise_for_status()
+
+        file_path.write_text(resp.text)
+        print(f"Downloaded input to {file_path}")
+
+    return file_path
 
 
-def get_input(url: str) -> str:
-    sess = get_env_var("session")
-    return requests.get(f"{url}/input", cookies={"session": sess}).text
+def extract_input(year: Union[int, str], day: Union[int, str]) -> List[str]:
+    """Reads input.txt for a specific day and returns a list of lines."""
+    file_path = get_day_path(year, day) / "input.txt"
 
+    if not file_path.exists():
+        fetch_and_save_input(year, day)
 
-def create_input_file(data: str, year: str, day: str) -> None:
-    f = get_folder_name(year, day)
-    data_file = f"{f}/input.txt"
-    with open(data_file, "w") as f:
-        f.write(data)
-
-
-def extract_input(filename: str) -> list[str]:
-    with open(filename) as f:
-        return [line.rstrip() for line in f]
+    return file_path.read_text().splitlines()

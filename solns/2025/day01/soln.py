@@ -22,3 +22,4 @@ class Solution:
 s = Solution()
 s.solve_part_1()
 s.solve_part_2()
+
